@@ -5,9 +5,13 @@ LABEL Description="Image for running a Turkle interface using MySQL"
 WORKDIR /opt/turkle
 COPY requirements.txt /opt/turkle/requirements.txt
 
-RUN set -eux; \
+RUN sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list; \
+    sed -i 's/security.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list; \
+    set -eux; \
     apt-get update; \
     apt-get install -y --no-install-recommends cron default-libmysqlclient-dev build-essential pkg-config; \
+    pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple; \
+    pip install --upgrade pip; \
     pip install --no-cache-dir --upgrade -r requirements.txt gunicorn mysqlclient whitenoise; \
     apt-get remove --purge -y build-essential; \
     apt-get autoremove -y; \
